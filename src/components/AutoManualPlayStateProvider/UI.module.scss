@@ -1,0 +1,33 @@
+@use "../common.scss" as *;
+
+.base {
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  position: absolute;
+  width: 250px;
+  height: 200px;
+  padding: 9px 10px;
+}
+
+.betForm {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: var(--play-top);
+  background-color: rgba(var(--play-panel-bg), 0.5);
+
+  width: 250px;
+  height: 191px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.disabled {
+  opacity: 0.1;
+}
