@@ -1,12 +1,12 @@
-# PlayController
+# PlinkoPlayController
 
-The `PlayController` component is a key part of the gameplay interface, allowing users to initiate a play or cash out based on their current game state. It supports manual play, autoplay for a specified number of plays, dynamic currency handling, and play amount adjustments.
+The `PlinkoPlayController` component is a key part of the gameplay interface, allowing users to initiate a play or cash out based on their current game state. It supports manual play, autoplay for a specified number of plays, dynamic currency handling, and play amount adjustments.
 
 ---
 
 ## Component Overview
 
-The `PlayController` allows the user to:
+The `PlinkoPlayController` allows the user to:
 
 - Select a currency.
 - Adjust the play amount.
@@ -21,7 +21,7 @@ The `PlayController` allows the user to:
 ### 1. Install the package using npm:
 
 ```bash
-npm install @enigma-lake/play-controller-sdk
+npm install @enigma-lake/plinko-play-controller-sdk
 ```
 
 ### 2. Import the component and styles in your project:
@@ -31,9 +31,9 @@ import {
   AUTO_PLAY_STATE,
   GAME_MODE,
   AutoManualPlayProvider,
-} from "@enigma-lake/play-controller-sdk";
+} from "@enigma-lake/plinko-play-controller-sdk";
 
-import "@enigma-lake/play-controller-sdk/dist/style.css";
+import "@enigma-lake/plinko-play-controller-sdk/dist/style.css";
 ```
 
 ---
@@ -42,7 +42,7 @@ import "@enigma-lake/play-controller-sdk/dist/style.css";
 
 ### `AutoManualPlayProvider`
 
-The `AutoManualPlayProvider` wraps the PlayController, managing both manual play and autoplay. It uses React Context to provide game state and actions throughout the component tree.
+The `AutoManualPlayProvider` wraps the PlinkoPlayController, managing both manual play and autoplay. It uses React Context to provide game state and actions throughout the component tree.
 
 🔹 **Features of `AutoManualPlayProvider`**:
 
@@ -57,14 +57,8 @@ The `AutoManualPlayProvider` wraps the PlayController, managing both manual play
 Handles the styling-related properties for the component.
 
 - **`panel` (optional)**: Custom styling for the play controller.
-
   - **`bgColorHex`**: Hex color for the panel background.
   - **`top`**: top margin for the panel relative to the window.
-
-- **`dropdown` (optional)**: Custom styling for the play controller.
-  - **`bgColorHex`**: Hex color for the panel background.
-  - **`borderConfig`**: Hex color for each type of risk.
-  -
 
 ### 2. `CurrencyProps`
 
@@ -73,15 +67,13 @@ Handles currency-related logic and settings.
 - **`currencyOptions`**: An object containing the following properties:
   - **`currentCurrency`**: The currently selected currency (e.g., `Currency.SWEEPS`).
   - **`currencies`**: Array of available currencies that the user can choose from.
-  - **`winText`**: The win amount during the playing.
 
 ### 3. `ActionsProps`
 
 Defines functions for the user actions.
 
 - **`onPlay`**: A callback function to trigger when the user starts a play.
-- **`onAutoPlay`**: A callback function to trigger when the user starts autoplay. It accepts `selection` (an array of selected indices) and `callback` (a function to be executed once autoplay finishes).
-- **`onCashout`**: A callback function to trigger when the user decides to cash out their winnings.
+- **`onAutoPlay`**: A callback function to trigger when the user starts autoplay. It accepts `next` (a function to execute the next play round) and `stop` (a function to forcefully stop autoplay).
 
 ### 4. `PlaySettingsProps`
 
@@ -89,12 +81,8 @@ Handles game-specific settings and states.
 
 - **`playOptions`**: An object containing the following properties:
   - **`isPlaying`**: Boolean flag indicating whether the game is currently in progress.
-  - **`canCashout`**: Boolean flag indicating whether the user can cash out their current play.
   - **`disabledController`**: Boolean flag to disable all interactive elements in the component, preventing user interactions (e.g., when the game is in progress).
   - **`displayController`**: Boolean flag to determine if the play controller should be visible.
-  - **`showAutoPlayToast`**: A function to show a toast message during autoplay. Accepts an object with:
-    - **`type`**: Message type (`"success"`, `"error"`, `"warning"`, or `"info"`).
-    - **`message`**: The message to display.
   - **`playHook`**: A hook providing the current play amount, play limits, and a function to set the play amount.
     - **`playLimits`**: Play limits for the game.
     - **`playAmount`**: The current play amount.
@@ -106,8 +94,8 @@ Handles game-specific settings and states.
 ## Example Usage
 
 ```tsx
-import "@enigma-lake/play-controller-sdk/dist/style.css";
-import { AutoManualPlayProvider, GAME_MODE, AUTO_PLAY_STATE } from "@enigma-lake/play-controller-sdk";
+import "@enigma-lake/plinko-play-controller-sdk/dist/style.css";
+import { AutoManualPlayProvider, GAME_MODE, AUTO_PLAY_STATE } from "@enigma-lake/plinko-play-controller-sdk";
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
 
 const GameExample = () => {
@@ -115,23 +103,17 @@ const GameExample = () => {
     currencyOptions: {
       currentCurrency: Currency.SWEEPS,
       currencies: [Currency.SWEEPS, Currency.GOLD],
-      winText: "0.00 SC",
     },
     onPlay: () => console.log("Play button clicked"),
-    onAutoPlay: (selection, next, stop) => {
+    onAutoPlay: (next, stop) => {
       console.log("Auto Play started with selection:", selection);
       next(); // Proceed to the next autoplay round
       stop(); // Stop autoplay (e.g., in case of an error or when the user chooses to stop)
     },
-    onCashout: () => console.log("Cashout clicked"),
     playOptions: {
       displayController: true,
-      canCashout: false,
       isPlaying: false,
       disabledController: false,
-      showAutoPlayToast: (props) => {
-        console.log(`${props.type}: ${props.message}`);
-      },
       playHook: () => {
         return {
           playLimits: { min: 1, max: 100 },
@@ -143,13 +125,12 @@ const GameExample = () => {
     panel: {
       bottom: '15px',
       bgColorHex: "#081E64"
-      dropdownBgColorHex: "#081E64"
     }
   };
 
   return (
     <AutoManualPlayProvider config={config}>
-      {({ autoPlay: { selection, setSelection, state }, mode }) => (
+      {({ autoPlay: { state }, mode }) => (
         // children content
       )}
     </AutoManualPlayProvider>
@@ -175,8 +156,8 @@ const GameExample = () => {
 
    - Supports customizable input and button colors.
 
-4. **Play & Cashout Actions**:
-   - Allows users to initiate gameplay or cash out winnings seamlessly.
+4. **Play Actions**:
+   - Allows users to initiate gameplay
 
 ---
 

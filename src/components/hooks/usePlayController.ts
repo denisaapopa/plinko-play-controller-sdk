@@ -17,9 +17,7 @@ export const usePlayController = () => {
   const { currentCurrency, currencies } = config.currencyOptions;
   const {
     isPlaying,
-    canCashout,
     disabledController,
-    disabledMenu,
     autoPlayDelay = 500,
     playHook,
   } = config.playOptions;
@@ -79,7 +77,7 @@ export const usePlayController = () => {
     loopRounds(playedRounds, numberOfPlays);
   };
 
-  const isDisabled = () => disabledController || isPlaying || disabledMenu;
+  const isDisabled = () => disabledController || isPlaying;
   const isAutoplayDisabled = () =>
     disabledController || state === AUTO_PLAY_STATE.PLAYING;
 
@@ -127,7 +125,6 @@ export const usePlayController = () => {
     manualPlay: {
       isDisabled,
       onPlay: config.onPlay,
-      canCashout,
     },
     autoPlay: {
       isDisabled: isAutoplayDisabled,

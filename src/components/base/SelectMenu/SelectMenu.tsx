@@ -55,7 +55,7 @@ const SelectMenu = ({
             <ChevronIcon open={open} disabled={disabled} />
           </MenuButton>
           <MenuItems
-            anchor={{ to: "top start" }}
+            anchor={{ to: "right end" }}
             className={cx(style_select.menuItems)}
           >
             {currencies.map((option) => (

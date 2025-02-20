@@ -1,18 +1,9 @@
 import { Currency, PlayLimits } from "@enigma-lake/zoot-platform-sdk";
-import { RiskTypes } from "../components/base/DifficultySelector/types";
 
 export type StylingProps = {
   panel: {
     top: string;
     bgColorHex: string;
-  };
-  dropdown: {
-    bgColorHex: string;
-    borderConfig: {
-      [RiskTypes.LOW]: string;
-      [RiskTypes.MEDIUM]: string;
-      [RiskTypes.HIGH]: string;
-    };
   };
 };
 
@@ -28,15 +19,7 @@ export type ActionsProps = {
 
 export type PlaySettingsProps = {
   isPlaying: boolean;
-  canCashout: boolean;
   disabledController: boolean;
-  risks: RiskTypes[];
-  currentRisk: RiskTypes;
-  currentRow: number;
-  rows: number[];
-  onRiskChange: (risk: RiskTypes) => void;
-  onRowNumberChange: (row: number) => void;
-  disabledMenu: boolean;
   displayController: boolean;
   playHook: () => {
     playLimits?: PlayLimits;

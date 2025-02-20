@@ -15,8 +15,6 @@ import {
 } from "./AutoManualPlayStateContext";
 import { hexToRgb } from "../utils";
 
-import DifficultySelector from "../base/DifficultySelector/DifficultySelector";
-
 interface AutoManualPlayStateProviderProps {
   children:
     | React.ReactNode
@@ -127,16 +125,9 @@ const AutoManualPlayProvider: React.FC<AutoManualPlayStateProviderProps> = ({
             {
               "--play-top": config.panel.top,
               "--play-panel-bg": hexToRgb(config.panel.bgColorHex ?? "#01243A"),
-              "--play-dropdown-bg": hexToRgb(
-                config.dropdown.bgColorHex ?? "#01243A",
-              ),
             } as React.CSSProperties
           }
         >
-          <DifficultySelector
-            playOptions={config.playOptions}
-            dropdownConfig={config.dropdown}
-          />
           <InputWithIcon
             value={numberOfPlays === Infinity ? 0 : numberOfPlays}
             type="number"
