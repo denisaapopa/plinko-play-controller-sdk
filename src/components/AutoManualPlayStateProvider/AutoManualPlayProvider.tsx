@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useState, useMemo } from "react";
+import { ReactElement, useCallback, useState, useMemo, useEffect } from "react";
 import cx from "classnames";
 
 import { AUTO_PLAY_STATE, GAME_MODE } from "../../types/gameMode";
@@ -76,6 +76,37 @@ const AutoManualPlayProvider: React.FC<AutoManualPlayStateProviderProps> = ({
       prevMode === GAME_MODE.MANUAL ? GAME_MODE.AUTOPLAY : GAME_MODE.MANUAL,
     );
   }, [autoplayState, config.playOptions]);
+
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      const activeElement = document.activeElement as HTMLElement | null;
+
+      if (activeElement && activeElement.tagName !== "BUTTON") {
+        return;
+      }
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (activeElement?.getAttribute("data-role") === "primary-button") {
+          if (mode === GAME_MODE.MANUAL) {
+            config.onPlay();
+          }
+        } else {
+          event.stopImmediatePropagation();
+        }
+      }
+    },
+    [config, mode],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress, true);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress, true);
+    };
+  }, [handleKeyPress]);
 
   const contextValue = useMemo(
     () => ({
