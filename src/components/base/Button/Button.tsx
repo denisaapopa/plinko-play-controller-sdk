@@ -26,6 +26,7 @@ const Button = ({
         [styles["base__state-disabled"]]: disabled,
       })}
       disabled={disabled}
+      data-role={`${theme}-button`}
     />
   );
 };
