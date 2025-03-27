@@ -37,7 +37,7 @@ const AutoPlayController = () => {
       />
 
       {overlayPlayButton && isDisabled() ? (
-        <Button className={styles_button.buttonSpecial}>
+        <Button className={styles_button.buttonOverride}>
           {overlayPlayButton()}
         </Button>
       ) : (
