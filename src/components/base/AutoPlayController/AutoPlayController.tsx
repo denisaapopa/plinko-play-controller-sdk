@@ -19,6 +19,7 @@ const AutoPlayController = () => {
     onChangeAmount,
     onBlurAmount,
     autoPlay: { isDisabled, state, onPlay, onStopPlay },
+    overlayPlayButton,
   } = usePlayController();
 
   return (
@@ -35,22 +36,33 @@ const AutoPlayController = () => {
         currencies={currencies}
       />
 
-      {state === AUTO_PLAY_STATE.PLAYING ? (
-        <Button className={styles_button.buttonCashout} onClick={onStopPlay}>
-          Stop Autoplay
+      {overlayPlayButton && isDisabled() ? (
+        <Button className={styles_button.buttonSpecial}>
+          {overlayPlayButton()}
         </Button>
       ) : (
-        <Button
-          disabled={isDisabled() || !isValidPlayAmount}
-          className={
-            currentCurrency === Currency.GOLD
-              ? styles_button.buttonGold
-              : styles_button.buttonSweeps
-          }
-          onClick={onPlay}
-        >
-          Start Autoplay
-        </Button>
+        <>
+          {state === AUTO_PLAY_STATE.PLAYING ? (
+            <Button
+              className={styles_button.buttonCashout}
+              onClick={onStopPlay}
+            >
+              Stop Autoplay
+            </Button>
+          ) : (
+            <Button
+              disabled={isDisabled() || !isValidPlayAmount}
+              className={
+                currentCurrency === Currency.GOLD
+                  ? styles_button.buttonGold
+                  : styles_button.buttonSweeps
+              }
+              onClick={onPlay}
+            >
+              Start Autoplay
+            </Button>
+          )}
+        </>
       )}
     </>
   );

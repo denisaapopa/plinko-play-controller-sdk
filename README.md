@@ -56,9 +56,13 @@ The `AutoManualPlayProvider` wraps the PlinkoPlayController, managing both manua
 
 Handles the styling-related properties for the component.
 
-- **`panel` (optional)**: Custom styling for the play controller.
+- **`panel`**(optional): Custom styling for the play controller.
   - **`bgColorHex`**: Hex color for the panel background.
   - **`top`**: top margin for the panel relative to the window.
+  - **`overlayButtonBgColor`**(optional):
+    - Defines the background color of the special button overlay.
+    - Used only when `overlayPlayButton` is provided.
+    - **_Only applies when the controller is disabled_**
 
 ### 2. `CurrencyProps`
 
@@ -88,6 +92,10 @@ Handles game-specific settings and states.
     - **`playAmount`**: The current play amount.
     - **`setPlayAmount`**: A function to set the play amount.
   - **`autoPlayDelay`** (optional): The delay (in milliseconds) before auto play starts.
+  - **`overlayPlayButton`** (optional):
+    - Accepts a function that returns the content of the special button.
+    - When provided, it overlays the play button, indicating bonus rounds or special gameplay options.
+    - **_Only appear when the controller is disabled_**
 
 ---
 
@@ -121,10 +129,12 @@ const GameExample = () => {
           setPlayAmount: (value) => console.log("New play amount:", value),
         };
       },
+      overlayPlayButton: () => "Bonus Round",
     },
     panel: {
       bottom: '15px',
-      bgColorHex: "#081E64"
+      bgColorHex: "#081E64",
+      overlayButtonBgColor:  "#01243A"
     }
   };
 

@@ -20,6 +20,7 @@ export const usePlayController = () => {
     disabledController,
     autoPlayDelay = 500,
     playHook,
+    overlayPlayButton,
   } = config.playOptions;
 
   const { playAmount, playLimits, setPlayAmount } = playHook?.() ?? {};
@@ -122,6 +123,7 @@ export const usePlayController = () => {
     onBlurAmount,
     playOptions: config.playOptions,
     isValidPlayAmount,
+    overlayPlayButton,
     manualPlay: {
       isDisabled,
       onPlay: config.onPlay,

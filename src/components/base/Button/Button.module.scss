@@ -60,3 +60,7 @@
 .buttonGold {
   background: linear-gradient(357deg, #bf9e21 22.01%, #f0c72c 97.97%);
 }
+
+.buttonSpecial {
+  background: rgba(var(--overlay-btn-bg), 1);
+}

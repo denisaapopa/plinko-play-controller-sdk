@@ -156,6 +156,9 @@ const AutoManualPlayProvider: React.FC<AutoManualPlayStateProviderProps> = ({
             {
               "--play-top": config.panel.top,
               "--play-panel-bg": hexToRgb(config.panel.bgColorHex ?? "#01243A"),
+              "--overlay-btn-bg": hexToRgb(
+                config.panel?.overlayButtonBgColor ?? "#0F1528",
+              ),
             } as React.CSSProperties
           }
         >

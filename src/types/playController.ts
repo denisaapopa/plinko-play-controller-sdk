@@ -1,9 +1,11 @@
 import { Currency, PlayLimits } from "@enigma-lake/zoot-platform-sdk";
+import { ReactNode } from "react";
 
 export type StylingProps = {
   panel: {
     top: string;
     bgColorHex: string;
+    overlayButtonBgColor?: string;
   };
 };
 
@@ -27,6 +29,7 @@ export type PlaySettingsProps = {
     setPlayAmount: (value: number) => void;
   };
   autoPlayDelay?: number;
+  overlayPlayButton?: () => ReactNode;
 };
 
 export type PlayControllerProps = StylingProps &
