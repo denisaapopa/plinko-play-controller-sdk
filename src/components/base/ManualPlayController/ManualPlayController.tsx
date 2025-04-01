@@ -5,6 +5,7 @@ import { usePlayController } from "../../hooks/usePlayController";
 import Button from "../Button";
 
 import styles_button from "../Button/Button.module.scss";
+import { useCallback, useEffect } from "react";
 
 const ManualPlayController = () => {
   const {
@@ -20,6 +21,40 @@ const ManualPlayController = () => {
     manualPlay: { isDisabled, onPlay },
     overlayPlayButton,
   } = usePlayController();
+
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.code === "Space") {
+        event.preventDefault();
+        event.stopPropagation();
+        const scBtn = `${[styles_button["buttonSweeps__active"]]}`;
+        const gcBtn = `${[styles_button["buttonGold__active"]]}`;
+
+        const activeClassName =
+          currentCurrency === Currency.GOLD ? gcBtn : scBtn;
+
+        const button = document.querySelector(
+          "[data-role='primary-button']",
+        ) as HTMLButtonElement;
+
+        if (button && !isDisabled()) {
+          button.classList.add(activeClassName);
+          onPlay();
+          setTimeout(() => {
+            button.classList.remove(activeClassName);
+          }, 200);
+        }
+      }
+    },
+    [currentCurrency, isDisabled, onPlay],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyPress, true);
+    return () => {
+      window.removeEventListener("keydown", handleKeyPress, true);
+    };
+  }, [handleKeyPress]);
 
   return (
     <>

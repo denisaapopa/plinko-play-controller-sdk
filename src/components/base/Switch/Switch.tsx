@@ -1,5 +1,5 @@
 import { Switch as HeadlessSwitch } from "@headlessui/react";
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useEffect } from "react";
 import cx from "classnames";
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
 
@@ -29,6 +29,30 @@ export const Switch = ({
       }),
     [enabled, currency, disabled],
   );
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      const focusedElement = document.activeElement as HTMLElement;
+      if (
+        event.code === "Space" &&
+        focusedElement?.getAttribute("role") === "switch"
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        focusedElement.blur();
+      }
+    };
+
+    // Attach global event listener
+    window.addEventListener("keydown", handleGlobalKeyDown, true);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener("keydown", handleGlobalKeyDown, true);
+    };
+  }, []);
 
   return (
     <HeadlessSwitch

@@ -50,6 +50,7 @@ const SelectMenu = ({
               [style_select.disabled]: disabled,
             })}
             disabled={disabled}
+            as="div"
           >
             {getIcon(selectedCurrency)}
             <ChevronIcon open={open} disabled={disabled} />
