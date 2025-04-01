@@ -55,10 +55,16 @@
 
 .buttonSweeps {
   background: linear-gradient(357deg, #10be68 23.9%, #29cf7d 97.97%);
+  &:active {
+    background: rgba(0, 140, 71, 1);
+  }
 }
 
 .buttonGold {
   background: linear-gradient(357deg, #bf9e21 22.01%, #f0c72c 97.97%);
+  &:active {
+    background: rgba(154, 124, 4, 1);
+  }
 }
 
 .buttonOverride {
