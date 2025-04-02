@@ -1,6 +1,7 @@
 import cx from "classnames";
 import React from "react";
 
+import { GAME_MODE } from "../../../types";
 import styles from "./Button.module.scss";
 
 const themes = {
@@ -11,10 +12,13 @@ const themes = {
 
 type Props = React.ComponentProps<"button"> & {
   theme?: (typeof themes)[keyof typeof themes];
+  roleType?: GAME_MODE;
+  className?: string;
 };
 
 const Button = ({
   disabled,
+  roleType,
   className = "",
   theme = "primary",
   ...props
@@ -26,7 +30,7 @@ const Button = ({
         [styles["base__state-disabled"]]: disabled,
       })}
       disabled={disabled}
-      data-role={`${theme}-button`}
+      data-role={`role-${roleType}-button`}
     />
   );
 };

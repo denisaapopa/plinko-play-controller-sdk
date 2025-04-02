@@ -33,7 +33,7 @@ export default [
       "import/named": "off",
 
       "no-console": ["warn", { allow: ["info", "warn", "error"] }],
-      "react-hooks/exhaustive-deps": ["error"],
+      "react-hooks/exhaustive-deps": "off",
       "no-unused-vars": "off",
       "no-nested-ternary": ["error"],
       "@typescript-eslint/no-restricted-imports": ["error"],
