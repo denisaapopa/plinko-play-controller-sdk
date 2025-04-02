@@ -96,6 +96,9 @@ Handles game-specific settings and states.
     - Accepts a function that returns the content of the special button.
     - When provided, it overlays the play button, indicating bonus rounds or special gameplay options.
     - **_Only appear when the controller is disabled_**
+  - **`isButtonPressed`**(optional):
+    - Boolean flag that, when set to `true`, makes the play button appear as if it is actively pressed (:active state)
+    - When `false`, it removes the pressed state from the button.
 
 ---
 
@@ -130,6 +133,7 @@ const GameExample = () => {
         };
       },
       overlayPlayButton: () => "Bonus Round",
+      isButtonPressed: false, // can be true, false or undefined
     },
     panel: {
       bottom: '15px',

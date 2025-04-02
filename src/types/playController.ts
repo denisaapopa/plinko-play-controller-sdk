@@ -30,6 +30,7 @@ export type PlaySettingsProps = {
   };
   autoPlayDelay?: number;
   overlayPlayButton?: () => ReactNode;
+  isButtonPressed?: boolean;
 };
 
 export type PlayControllerProps = StylingProps &

@@ -21,6 +21,7 @@ const ManualPlayController = () => {
     onBlurAmount,
     manualPlay: { isDisabled, onPlay },
     overlayPlayButton,
+    isButtonPressed,
   } = usePlayController();
 
   const roleButton = GAME_MODE.MANUAL;
@@ -70,6 +71,19 @@ const ManualPlayController = () => {
     },
     [activeClassName, currentCurrency, roleButton],
   );
+
+  useEffect(() => {
+    const role = `role-${GAME_MODE.MANUAL}-button`;
+    const button = document.querySelector(
+      `[data-role=${role}]`,
+    ) as HTMLButtonElement;
+
+    if (!button) {
+      return;
+    }
+
+    button.classList.toggle(activeClassName, isButtonPressed);
+  }, [isButtonPressed]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress, true);
