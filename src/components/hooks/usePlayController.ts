@@ -21,7 +21,9 @@ export const usePlayController = () => {
     autoPlayDelay = 500,
     playHook,
     overlayPlayButton,
-    isButtonPressed,
+    isPlayButtonPressed = false,
+    isStopButtonPressed = false,
+    setIsStopButtonPressed,
   } = config.playOptions;
 
   const { playAmount, playLimits, setPlayAmount } = playHook?.() ?? {};
@@ -125,7 +127,9 @@ export const usePlayController = () => {
     playOptions: config.playOptions,
     isValidPlayAmount,
     overlayPlayButton,
-    isButtonPressed,
+    isPlayButtonPressed,
+    isStopButtonPressed,
+    setIsStopButtonPressed,
     manualPlay: {
       isDisabled,
       onPlay: config.onPlay,

@@ -1,4 +1,5 @@
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { usePlayController } from "../../hooks/usePlayController";
 import { AUTO_PLAY_STATE, GAME_MODE } from "../../../types";
@@ -6,7 +7,7 @@ import PlayAmountControl from "../PlayController/PlayController";
 import Button from "../Button";
 
 import styles_button from "../Button/Button.module.scss";
-import { useCallback, useEffect, useMemo } from "react";
+import { addPressedClass, removePressedClass, selectButton } from "../../utils";
 
 const AutoPlayController = () => {
   const {
@@ -21,54 +22,80 @@ const AutoPlayController = () => {
     onBlurAmount,
     autoPlay: { isDisabled, state, onPlay, onStopPlay },
     overlayPlayButton,
+    isStopButtonPressed,
+    setIsStopButtonPressed,
   } = usePlayController();
 
   const roleButton = GAME_MODE.AUTOPLAY;
-  const activeClassName = useMemo(() => {
-    const scBtn = `${[styles_button["buttonSweeps__active"]]}`;
-    const gcBtn = `${[styles_button["buttonGold__active"]]}`;
 
-    return currentCurrency === Currency.GOLD ? gcBtn : scBtn;
-  }, [currentCurrency]);
+  const activeClassName = useMemo(() => {
+    const isCashout = isStopButtonPressed;
+    const baseClass =
+      currentCurrency === Currency.GOLD
+        ? styles_button.buttonGold__active
+        : styles_button.buttonSweeps__active;
+
+    return isCashout ? styles_button.buttonCashout__active : baseClass;
+  }, [currentCurrency, isStopButtonPressed]);
+
+  const getClassName = useMemo(() => {
+    if (isStopButtonPressed) {
+      return `${styles_button.buttonCashout} ${activeClassName}`;
+    }
+    if (state === AUTO_PLAY_STATE.PLAYING) {
+      return styles_button.buttonCashout;
+    }
+    return currentCurrency === Currency.GOLD
+      ? styles_button.buttonGold
+      : styles_button.buttonSweeps;
+  }, [currentCurrency, state, isStopButtonPressed, activeClassName]);
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      if (event.code === "Space") {
-        event.preventDefault();
-        event.stopPropagation();
-        const role = `role-${roleButton}-button`;
-        const button = document.querySelector(
-          `[data-role=${role}]`,
-        ) as HTMLButtonElement;
+      if (event.code !== "Space") {
+        return;
+      }
 
-        if (button && (!isDisabled() || state === AUTO_PLAY_STATE.PLAYING)) {
-          if (!button.classList.contains(activeClassName)) {
-            button.classList.add(activeClassName);
-          }
-          button.click();
-        }
+      const button = selectButton(roleButton);
+      if (!button) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const canTrigger =
+        !isDisabled() ||
+        state === AUTO_PLAY_STATE.PLAYING ||
+        isStopButtonPressed;
+
+      if (canTrigger) {
+        addPressedClass(roleButton, activeClassName);
+        button.click();
       }
     },
-    [activeClassName, isDisabled, currentCurrency, state, roleButton],
+    [activeClassName, isDisabled, state, isStopButtonPressed],
   );
 
   const handleKeyUp = useCallback(
     (event: KeyboardEvent) => {
-      if (event.code === "Space") {
-        event.preventDefault();
-        event.stopPropagation();
+      if (event.code !== "Space") {
+        return;
+      }
 
-        const role = `role-${roleButton}-button`;
-        const button = document.querySelector(
-          `[data-role=${role}]`,
-        ) as HTMLButtonElement;
+      const button = selectButton(roleButton);
+      if (!button) {
+        return;
+      }
 
-        if (button && button.classList.contains(activeClassName)) {
-          button.classList.remove(activeClassName);
-        }
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (!isStopButtonPressed) {
+        removePressedClass(roleButton, activeClassName);
       }
     },
-    [activeClassName, currentCurrency, state, roleButton],
+    [activeClassName, isStopButtonPressed],
   );
 
   useEffect(() => {
@@ -78,17 +105,27 @@ const AutoPlayController = () => {
       window.removeEventListener("keydown", handleKeyPress, true);
       window.removeEventListener("keyup", handleKeyUp, true);
     };
-  }, [currentCurrency, state]);
+  }, [handleKeyPress, handleKeyUp]);
 
-  const getClassName = () => {
-    if (state === AUTO_PLAY_STATE.PLAYING) {
-      return styles_button.buttonCashout;
-    }
-    if (currentCurrency === Currency.GOLD) {
-      return styles_button.buttonGold;
-    }
-    return styles_button.buttonSweeps;
-  };
+  const handleOnStop = useCallback(() => {
+    setIsStopButtonPressed?.(true);
+    onStopPlay();
+  }, [setIsStopButtonPressed, onStopPlay]);
+
+  const isButtonDisabled =
+    state === AUTO_PLAY_STATE.PLAYING || isStopButtonPressed
+      ? false
+      : isDisabled() || !isValidPlayAmount;
+
+  const buttonLabel =
+    state === AUTO_PLAY_STATE.PLAYING || isStopButtonPressed
+      ? "Stop Autoplay"
+      : "Start Autoplay";
+
+  const buttonAction =
+    state === AUTO_PLAY_STATE.PLAYING || isStopButtonPressed
+      ? handleOnStop
+      : onPlay;
 
   return (
     <>
@@ -110,18 +147,12 @@ const AutoPlayController = () => {
         </Button>
       ) : (
         <Button
-          disabled={
-            state === AUTO_PLAY_STATE.PLAYING
-              ? false
-              : isDisabled() || !isValidPlayAmount
-          }
-          className={getClassName()}
-          onClick={state === AUTO_PLAY_STATE.PLAYING ? onStopPlay : onPlay}
+          disabled={isButtonDisabled}
+          className={getClassName}
+          onClick={buttonAction}
           roleType={roleButton}
         >
-          {state === AUTO_PLAY_STATE.PLAYING
-            ? "Stop Autoplay"
-            : "Start Autoplay"}
+          {buttonLabel}
         </Button>
       )}
     </>

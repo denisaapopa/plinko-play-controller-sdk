@@ -96,9 +96,19 @@ Handles game-specific settings and states.
     - Accepts a function that returns the content of the special button.
     - When provided, it overlays the play button, indicating bonus rounds or special gameplay options.
     - **_Only appear when the controller is disabled_**
-  - **`isButtonPressed`**(optional):
-    - Boolean flag that, when set to `true`, makes the play button appear as if it is actively pressed (:active state)
-    - When `false`, it removes the pressed state from the button.
+  - **`isPlayButtonPressed`**(optional): Controls the visual and logical `pressed` state of the **Play** button.
+    - `true`: The button appears pressed (e.g., due to keyboard input) and is temporarily disabled.
+    - `false`: The pressed style is removed and interaction is restored.
+    - When omitted, the SDK manages this state automatically.
+  - **`isStopButtonPressed`**(optional):Similar to `isPlayButtonPressed`, but for the Stop button in autoplay mode.
+    - `true`: Renders the Stop button as actively pressed and blocks interaction.
+    - `false`: Removes pressed styling and allows normal interaction.
+    - When omitted, the SDK manages this state internally.
+    - ⚠️ **Note**: If you provide `isStopButtonPressed`, you must also provide `setIsStopButtonPressed` — otherwise, the SDK cannot update the button state internally.
+  - **`setIsStopButtonPressed`**(optional): Callback function triggered when the user presses the **Stop** button.
+    - Receives the new pressed state (`true` or `false`) as an argument.
+    - Enables external state control and two-way sync with SDK behavior.
+    - If not provided, the SDK will manage Stop button logic internally — but only when `isStopButtonPressed` is also undefined.
 
 ---
 
@@ -133,7 +143,9 @@ const GameExample = () => {
         };
       },
       overlayPlayButton: () => "Bonus Round",
-      isButtonPressed: false, // can be true, false or undefined
+      isPlayButtonPressed: false, // can be true, false or undefined
+      isStopButtonPressed: false, // can be true, false or undefined
+      setIsStopButtonPressed: (value) => "set the new stop button pressed value"
     },
     panel: {
       bottom: '15px',

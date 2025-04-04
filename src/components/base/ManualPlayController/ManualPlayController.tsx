@@ -1,12 +1,13 @@
 import { Currency } from "@enigma-lake/zoot-platform-sdk";
+import { useCallback, useEffect, useMemo } from "react";
 
 import PlayAmountControl from "../PlayController/PlayController";
-import { usePlayController } from "../../hooks/usePlayController";
 import Button from "../Button";
-
 import styles_button from "../Button/Button.module.scss";
-import { useCallback, useEffect, useMemo } from "react";
+
+import { usePlayController } from "../../hooks/usePlayController";
 import { GAME_MODE } from "../../../types";
+import { selectButton, addPressedClass, removePressedClass } from "../../utils";
 
 const ManualPlayController = () => {
   const {
@@ -21,78 +22,85 @@ const ManualPlayController = () => {
     onBlurAmount,
     manualPlay: { isDisabled, onPlay },
     overlayPlayButton,
-    isButtonPressed,
+    isPlayButtonPressed,
   } = usePlayController();
 
   const roleButton = GAME_MODE.MANUAL;
-  const activeClassName = useMemo(() => {
-    const scBtn = `${[styles_button["buttonSweeps__active"]]}`;
-    const gcBtn = `${[styles_button["buttonGold__active"]]}`;
 
-    return currentCurrency === Currency.GOLD ? gcBtn : scBtn;
+  const activeClassName = useMemo(() => {
+    return currentCurrency === Currency.GOLD
+      ? styles_button.buttonGold__active
+      : styles_button.buttonSweeps__active;
+  }, [currentCurrency]);
+
+  const buttonClassName = useMemo(() => {
+    return currentCurrency === Currency.GOLD
+      ? styles_button.buttonGold
+      : styles_button.buttonSweeps;
   }, [currentCurrency]);
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      if (event.code === "Space") {
-        event.preventDefault();
-        event.stopPropagation();
-        const role = `role-${roleButton}-button`;
-        const button = document.querySelector(
-          `[data-role=${role}]`,
-        ) as HTMLButtonElement;
-
-        if (button && !isDisabled()) {
-          if (!button.classList.contains(activeClassName)) {
-            button.classList.add(activeClassName);
-          }
-          button.click();
-        }
+      if (event.code !== "Space" || isPlayButtonPressed) {
+        return;
       }
+
+      const button = selectButton(roleButton);
+      if (!button || isDisabled()) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      addPressedClass(roleButton, activeClassName);
+      button.click();
     },
-    [activeClassName, isDisabled, currentCurrency, onPlay, roleButton],
+    [isPlayButtonPressed, isDisabled, activeClassName],
   );
 
   const handleKeyUp = useCallback(
     (event: KeyboardEvent) => {
-      if (event.code === "Space") {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const role = `role-${roleButton}-button`;
-        const button = document.querySelector(
-          `[data-role=${role}]`,
-        ) as HTMLButtonElement;
-
-        if (button && button.classList.contains(activeClassName)) {
-          button.classList.remove(activeClassName);
-        }
+      if (event.code !== "Space" || isPlayButtonPressed) {
+        return;
       }
+
+      const button = selectButton(roleButton);
+      if (!button) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      removePressedClass(roleButton, activeClassName);
     },
-    [activeClassName, currentCurrency, roleButton],
+    [isPlayButtonPressed, activeClassName],
   );
 
   useEffect(() => {
-    const role = `role-${GAME_MODE.MANUAL}-button`;
-    const button = document.querySelector(
-      `[data-role=${role}]`,
-    ) as HTMLButtonElement;
-
-    if (!button) {
-      return;
+    if (isPlayButtonPressed) {
+      addPressedClass(roleButton, activeClassName);
+    } else {
+      removePressedClass(roleButton, activeClassName);
     }
-
-    button.classList.toggle(activeClassName, isButtonPressed);
-  }, [isButtonPressed]);
+  }, [isPlayButtonPressed, activeClassName]);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress, true);
     window.addEventListener("keyup", handleKeyUp, true);
+
     return () => {
       window.removeEventListener("keydown", handleKeyPress, true);
       window.removeEventListener("keyup", handleKeyUp, true);
     };
-  }, [currentCurrency]);
+  }, [handleKeyPress, handleKeyUp]);
+
+  const handlePlayClick = useCallback(() => {
+    if (!isPlayButtonPressed) {
+      onPlay();
+    }
+  }, [isPlayButtonPressed, onPlay]);
+
+  const isButtonDisabled = isDisabled() || !isValidPlayAmount;
 
   return (
     <>
@@ -114,13 +122,9 @@ const ManualPlayController = () => {
         </Button>
       ) : (
         <Button
-          disabled={isDisabled() || !isValidPlayAmount}
-          className={
-            currentCurrency === Currency.GOLD
-              ? styles_button.buttonGold
-              : styles_button.buttonSweeps
-          }
-          onClick={onPlay}
+          disabled={isButtonDisabled}
+          className={buttonClassName}
+          onClick={handlePlayClick}
           roleType={roleButton}
         >
           Play now

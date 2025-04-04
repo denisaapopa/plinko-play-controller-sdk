@@ -1,3 +1,5 @@
+import { GAME_MODE } from "../types";
+
 export const hexToRgb = (hex: string) => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, (_, r, g, b) => r + r + g + g + b + b);
@@ -8,4 +10,40 @@ export const hexToRgb = (hex: string) => {
         16,
       )}`
     : null;
+};
+
+export const selectButton = (gameMode: GAME_MODE) => {
+  const role = `role-${gameMode}-button`;
+  const button = document.querySelector(
+    `[data-role=${role}]`,
+  ) as HTMLButtonElement;
+  return button;
+};
+
+export const addPressedClass = (
+  gameMode: GAME_MODE,
+  activeClassName: string,
+) => {
+  const button = selectButton(gameMode);
+
+  if (!button) {
+    return;
+  }
+  if (!button.classList.contains(activeClassName)) {
+    button.classList.add(activeClassName);
+  }
+};
+
+export const removePressedClass = (
+  gameMode: GAME_MODE,
+  activeClassName: string,
+) => {
+  const button = selectButton(gameMode);
+
+  if (!button) {
+    return;
+  }
+  if (button.classList.contains(activeClassName)) {
+    button.classList.remove(activeClassName);
+  }
 };

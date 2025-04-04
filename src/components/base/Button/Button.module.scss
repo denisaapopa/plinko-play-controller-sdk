@@ -51,7 +51,8 @@
 
 .buttonCashout {
   background: linear-gradient(357deg, #7f44c3 22.01%, #9f5eeb 97.97%);
-  &:active {
+  &:active,
+  &__active {
     background: rgba(89, 47, 157, 1);
   }
 }
