@@ -14,6 +14,7 @@ import {
   AutoManualPlayStateContextType,
 } from "./AutoManualPlayStateContext";
 import { hexToRgb } from "../utils";
+import useAutoPlay from "../hooks/useAutoplay";
 
 interface AutoManualPlayStateProviderProps {
   children:
@@ -33,6 +34,17 @@ const AutoManualPlayProvider: React.FC<AutoManualPlayStateProviderProps> = ({
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [playedRounds, setPlayedRounds] = useState(0);
   const [numberOfPlays, setNumberOfPlays] = useState(Infinity);
+  const autoPlayLoop = useAutoPlay({
+    config,
+    autoPlay: {
+      state: autoplayState,
+      playedRounds,
+      numberOfPlays,
+      setPlayedRounds,
+      setNumberOfPlays,
+      setState: setAutoplayState,
+    },
+  });
 
   const startAutoplay = useCallback((numPlays: number) => {
     setMode(GAME_MODE.AUTOPLAY);
@@ -86,6 +98,9 @@ const AutoManualPlayProvider: React.FC<AutoManualPlayStateProviderProps> = ({
         state: autoplayState,
         playedRounds,
         numberOfPlays,
+        scheduleNextLoop: autoPlayLoop.scheduleNextLoop,
+        stopAutoplay: autoPlayLoop.stopAutoplay,
+        handleAutoPlay: autoPlayLoop.handleAutoPlay,
         isActive: isAutoPlaying,
         start: startAutoplay,
         stop: stopAutoplay,

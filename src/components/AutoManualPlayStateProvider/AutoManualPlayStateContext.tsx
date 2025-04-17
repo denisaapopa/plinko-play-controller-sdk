@@ -15,6 +15,13 @@ export interface AutoManualPlayStateContextType {
     playedRounds: number;
     numberOfPlays: number;
     isActive: boolean;
+    scheduleNextLoop: (
+      currentPlayedRounds: number,
+      remainingPlays: number,
+      directly?: boolean,
+    ) => void;
+    stopAutoplay: () => void;
+    handleAutoPlay: () => void;
     setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
     start: (numberOfPlays: number) => void;
     stop: () => void;

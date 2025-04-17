@@ -77,7 +77,7 @@ Handles currency-related logic and settings.
 Defines functions for the user actions.
 
 - **`onPlay`**: A callback function to trigger when the user starts a play.
-- **`onAutoPlay`**: A callback function to trigger when the user starts autoplay. It accepts `next` (a function to execute the next play round) and `stop` (a function to forcefully stop autoplay).
+- **`onAutoPlay`**: A callback function to trigger when the user starts autoplay. It accepts `next` (a function to execute the next play round), `stop` (a function to forcefully stop autoplay), and autoplay `state` (AUTO_PLAY_STATE.IDLE/AUTO_PLAY_STATE.PLAYING).
 
 ### 4. `PlaySettingsProps`
 
@@ -126,7 +126,7 @@ const GameExample = () => {
       currencies: [Currency.SWEEPS, Currency.GOLD],
     },
     onPlay: () => console.log("Play button clicked"),
-    onAutoPlay: (next, stop) => {
+    onAutoPlay: (next, stop, state) => {
       console.log("Auto Play started with selection:", selection);
       next(); // Proceed to the next autoplay round
       stop(); // Stop autoplay (e.g., in case of an error or when the user chooses to stop)
@@ -156,7 +156,7 @@ const GameExample = () => {
 
   return (
     <AutoManualPlayProvider config={config}>
-      {({ autoPlay: { state }, mode }) => (
+      {({ autoPlay: { state, scheduleNextLoop, numberOfPlays, playedRounds }, mode }) => (
         // children content
       )}
     </AutoManualPlayProvider>

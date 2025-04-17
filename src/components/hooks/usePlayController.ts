@@ -1,24 +1,16 @@
 import { AUTO_PLAY_STATE } from "../../types";
 import { useAutoManualPlayState } from "../AutoManualPlayStateProvider/AutoManualPlayStateContext";
-import { ChangeEvent, FocusEvent, useRef } from "react";
+import { ChangeEvent, FocusEvent } from "react";
 
 export const usePlayController = () => {
   const {
     config,
-    autoPlay: {
-      setNumberOfPlays,
-      numberOfPlays,
-      setPlayedRounds,
-      playedRounds,
-      setState,
-      state,
-    },
+    autoPlay: { state, handleAutoPlay, stopAutoplay },
   } = useAutoManualPlayState();
   const { currentCurrency, currencies } = config.currencyOptions;
   const {
     isPlaying,
     disabledController,
-    autoPlayDelay = 500,
     playHook,
     overlayPlayButton,
     isPlayButtonPressed = false,
@@ -29,57 +21,6 @@ export const usePlayController = () => {
   const { playAmount, playLimits, setPlayAmount } = playHook?.() ?? {};
   const minPlayAmount = playLimits?.[currentCurrency]?.limits.min ?? 0;
   const maxPlayAmount = playLimits?.[currentCurrency]?.limits.max ?? 0;
-  const playIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const isAutoplayActiveRef = useRef(false);
-
-  const stopAutoplay = () => {
-    isAutoplayActiveRef.current = false;
-    if (playIntervalRef.current) {
-      clearTimeout(playIntervalRef.current);
-      playIntervalRef.current = null;
-    }
-    setState(AUTO_PLAY_STATE.IDLE);
-    setTimeout(() => {
-      setPlayedRounds(0);
-    }, autoPlayDelay);
-  };
-
-  const loopRounds = (currentPlayedRounds: number, remainingPlays: number) => {
-    if (!isAutoplayActiveRef.current) {
-      return;
-    }
-
-    if (remainingPlays < 1 || numberOfPlays === 0) {
-      setNumberOfPlays(Infinity);
-      stopAutoplay();
-      return;
-    }
-
-    setPlayedRounds(currentPlayedRounds + 1);
-    setNumberOfPlays((prev) => Math.max(prev - 1, 0));
-
-    config.onAutoPlay(() => {
-      if (!isAutoplayActiveRef.current) {
-        return;
-      }
-
-      playIntervalRef.current = setTimeout(
-        () => loopRounds(currentPlayedRounds + 1, remainingPlays - 1),
-        autoPlayDelay,
-      );
-    }, stopAutoplay);
-  };
-
-  const handleAutoPlay = () => {
-    if (disabledController) {
-      return;
-    }
-
-    isAutoplayActiveRef.current = true;
-    setState(AUTO_PLAY_STATE.PLAYING);
-
-    loopRounds(playedRounds, numberOfPlays);
-  };
 
   const isDisabled = () => disabledController || isPlaying;
   const isAutoplayDisabled = () =>

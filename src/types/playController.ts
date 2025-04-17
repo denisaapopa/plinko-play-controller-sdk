@@ -1,5 +1,6 @@
 import { Currency, PlayLimits } from "@enigma-lake/zoot-platform-sdk";
 import { ReactNode } from "react";
+import { AUTO_PLAY_STATE } from "./gameMode";
 
 export type StylingProps = {
   panel: {
@@ -16,7 +17,11 @@ export type CurrencyProps = {
 
 export type ActionsProps = {
   onPlay: () => void;
-  onAutoPlay: (next: () => void, stop: () => void) => void;
+  onAutoPlay: (
+    next: () => void,
+    stop: () => void,
+    state: AUTO_PLAY_STATE,
+  ) => void;
 };
 
 export type PlaySettingsProps = {
